@@ -44,11 +44,11 @@
 ---
 
 ## 4. Incident Response (Group)
-- [SCENARIO_NAME]: (e.g., rag_slow)
-- [SYMPTOMS_OBSERVED]: 
-- [ROOT_CAUSE_PROVED_BY]: (List specific Trace ID or Log Line)
-- [FIX_ACTION]: 
-- [PREVENTIVE_MEASURE]: 
+- [SCENARIO_NAME]: rag_slow
+- [SYMPTOMS_OBSERVED]: Tốc độ phản hồi của hệ thống bị chậm đi đáng kể so với mức bình thường (~700ms vọt lên hơn 10000ms), dẫn tới độ trễ (latency) khi chạy load test cao bất thường.
+- [ROOT_CAUSE_PROVED_BY]: Log ghi nhận thời gian `latency_ms` lớn (hơn 10000) cùng với truy vết trên Trace ID trỏ tới quá trình truy xuất (retrieval) tài liệu, trong trường hợp này `mock_rag.py` dùng vòng lặp bị làm chậm nhân tạo (`time.sleep(2.5)` lặp lại).
+- [FIX_ACTION]: Sửa lỗi độ trễ tại RAG retrieval process (Về mặt mô phỏng: tắt lệnh cố ý chờ này đi qua tính năng disable incident).
+- [PREVENTIVE_MEASURE]: Triển khai Timeout cho các tác vụ gọi ra dịch vụ bên ngoài (như gọi API vector database), cũng như xây dựng tính năng fallback/cache nếu DB trả kết quả chậm hơn mức quy định của SLO.
 
 ---
 
@@ -67,13 +67,13 @@
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_D_NAME]
+### Lâm (QA & Team Lead)
 - [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
-
-### [MEMBER_E_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+  - Quản lý kịch bản Demo Live (soạn file `docs/demo-scenario.md`) để có thể mô tả quá trình từ hệ thống sập đến truy vết để hoàn thành Live Demo A3.
+  - Chạy mô phỏng tải bài tập tải (`load_test.py`) để giả lập lưu lượng với `--concurrency 5`.
+  - Thiết lập kịch bản Incident (cụ thể `rag_slow` và `tool_fail`) để đánh nghiệm và theo dõi trạng thái.
+  - Thực hiện Trace Root Cause dựa vào việc tìm kiếm `correlation_id` trên log `logs.jsonl` thu thập được để từ đó phân tích lỗi `tool_fail` hay `Vector store timeout`.
+- [EVIDENCE_LINK]: Kịch bản Live Demo (`docs/demo-scenario.md`) và phần Incident Response (Section 4).
 
 ---
 
