@@ -31,6 +31,8 @@
 ### 3.2 Dashboard & SLOs
 - [DASHBOARD_6_PANELS_SCREENSHOT]: [Path to image]
 - [SLO_TABLE]:
+
+
 | SLI | Target | Window | Current Value |
 |---|---:|---|---:|
 | Latency P95 | < 3000ms | 28d | |
