@@ -63,7 +63,7 @@
 
 ### Đặng Tiến Dũng - 2A202600024 (Tracing & Metrics Export)
 - [TASKS_COMPLETED]: Xây dựng tính năng Tracing & Enrichment. Triển khai hệ thống tracing qua Langfuse SDK với `app/tracing.py` (hỗ trợ `tracing_enabled()`, `flush_traces()`, `trace_chat()`). Tạo script kiểm tra `scripts/test_tracing.py` với danh sách 10 câu hỏi mẫu (EXAMPLE_CHATS) để chạy loop test tự động. Tích hợp tracing vào `/chat` endpoint tại `app/main.py` để ghi nhận latency, tokens, cost, quality score. Thiết lập audit_log ghi ra file `data/audit.jsonl` để theo dõi chi phí và chất lượng.
-- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/2b675a275f794ca90f3d77e0b8f2b62bc1705ddc
+- [EVIDENCE_LINK](https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/2b675a275f794ca90f3d77e0b8f2b62bc1705ddc)
 
 ### Phạm Việt Cường - 2A202600420 (SLO & Alerts & Dashboard)
 - [TASKS_COMPLETED]:
@@ -81,7 +81,7 @@
   - Thiết lập kịch bản Incident (cụ thể `rag_slow` và `tool_fail`) để đánh thử nghiệm và theo dõi trạng thái.
   - Thực hiện Trace Root Cause dựa vào việc tìm kiếm `correlation_id` trên log `logs.jsonl` thu thập được để từ đó phân tích lỗi `tool_fail` hay `Vector store timeout`.
   - Quản lý kịch bản Demo Live (soạn file `docs/demo-scenario.md`) để có thể mô tả quá trình từ hệ thống sập đến truy vết để hoàn thành Demo A3.
-- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/92c2c1b3f48e20bbecec3d1e116c9c1855a94442
+- [EVIDENCE_LINK](https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/92c2c1b3f48e20bbecec3d1e116c9c1855a94442)
 
 ---
 
