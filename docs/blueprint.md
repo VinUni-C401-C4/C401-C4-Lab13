@@ -20,16 +20,20 @@
 
 ---
 
-## 3. Technical Evidence (Group)
 
 ### 3.1 Logging & Tracing
-- [EVIDENCE_CORRELATION_ID_SCREENSHOT]: [Path to image]
-- [EVIDENCE_PII_REDACTION_SCREENSHOT]: [Path to image]
-- [EVIDENCE_TRACE_WATERFALL_SCREENSHOT]: [Path to image]
-- [TRACE_WATERFALL_EXPLANATION]: (Briefly explain one interesting span in your trace)
+EVIDENCE_CORRELATION_ID_SCREENSHOT
+ ![EVIDENCE_CORRELATION_ID_SCREENSHOT](../Correlation.png)
+ EVIDENCE_PII_REDACTION_SCREENSHOT
+ ![EVIDENCE_PII_REDACTION_SCREENSHOT](../PII.png)
+ EVIDENCE_TRACE_WATERFALL_SCREENSHOT:
+ ![EVIDENCE_TRACE_WATERFALL_SCREENSHOT](../Trace.png)
+- [TRACE_WATERFALL_EXPLANATION]: Chúng em chưa thể hiển thị được Trace Waterfall, do LangFuse không hỗ trợ hiển thị Trace Waterfall. Tuy nhiên, chúng em đã hiển thị được Trace ID và các thông tin liên quan đến Trace ID. 
+![](../trace_id.png)
 
 ### 3.2 Dashboard & SLOs
-- [DASHBOARD_6_PANELS_SCREENSHOT]: [Path to image]
+- DASHBOARD_6_PANELS_SCREENSHOT
+![DASHBOARD_6_PANELS_SCREENSHOT](../Dashboard_6_panels.png)
 - [SLO_TABLE]:
 
 
@@ -40,14 +44,17 @@
 | Cost Budget | < $2.5/day | 1d | |
 
 ### 3.3 Alerts & Runbook
-- [ALERT_RULES_SCREENSHOT]: [Path to image]
-- [SAMPLE_RUNBOOK_LINK]: [docs/alerts.md#L...]
+- ALERT_RULES_SCREENSHOT:
+![ALERT_RULES_SCREENSHOT](../Alert.png)
+- SAMPLE_RUNBOOK_LINK: 
+[docs/alerts.md](docs/alerts.md)
+
 
 ---
 
 ## 4. Incident Response (Group)
 - [SCENARIO_NAME]: rag_slow
-- [SYMPTOMS_OBSERVED]: Tốc độ phản hồi của hệ thống bị chậm đi đáng kể so với mức bình thường (~700ms vọt lên hơn 10000ms), dẫn tới độ trễ (latency) khi chạy load test cao bất thường.
+- [SYMPTOMS_OBSERVED]: Tốc độ phản hồi của hệ thống bị chậm đi đáng kể so với mức bình thường (~700ms vọt lên hơn 10000ms), dẫn tới độ trễ (latency) khi chạy load test cao bất thường.f
 - [ROOT_CAUSE_PROVED_BY]: Log ghi nhận thời gian `latency_ms` lớn (hơn 10000) cùng với truy vết trên Trace ID trỏ tới quá trình truy xuất (retrieval) tài liệu, trong trường hợp này `mock_rag.py` dùng vòng lặp bị làm chậm nhân tạo (`time.sleep(2.5)` lặp lại).
 - [FIX_ACTION]: Sửa lỗi độ trễ tại RAG retrieval process (Về mặt mô phỏng: tắt lệnh cố ý chờ này đi qua tính năng disable incident).
 - [PREVENTIVE_MEASURE]: Triển khai Timeout cho các tác vụ gọi ra dịch vụ bên ngoài (như gọi API vector database), cũng như xây dựng tính năng fallback/cache nếu DB trả kết quả chậm hơn mức quy định của SLO.
@@ -75,14 +82,15 @@
 - [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/8705a93
 - [EVIDENCE_LINK]: `config/slo.yaml`, `config/alert_rules.yaml`, `docs/alerts.md`, `docs/dashboard-spec.md`
 
-### Lâm (QA & Team Lead)
+### Phạm Trần Thanh Lâm (QA & Team Lead)
 - [TASKS_COMPLETED]: 
-  - Chạy mô phỏng tải (`load_test.py`) để giả lập lưu lượng với `--concurrency 5`.
-  - Thiết lập kịch bản Incident (cụ thể `rag_slow` và `tool_fail`) để đánh thử nghiệm và theo dõi trạng thái.
+  - Khắc phục lỗi bảo mật hệ thống 422 Unprocessable Entity bị gây ra bởi quá trình Tracing, giúp đảm bảo luồng Testing không bị vỡ.
+  - Chạy mô phỏng tải bài tập tải (`load_test.py`) để giả lập lưu lượng với `--concurrency 5` và hiển thị Metric màu tại Terminal.
+  - Thiết lập và tối ưu kịch bản Incident (cụ thể `rag_slow` và `tool_fail`) để đánh thử nghiệm và theo dõi trạng thái.
   - Thực hiện Trace Root Cause dựa vào việc tìm kiếm `correlation_id` trên log `logs.jsonl` thu thập được để từ đó phân tích lỗi `tool_fail` hay `Vector store timeout`.
-  - Quản lý kịch bản Demo Live (soạn file `docs/demo-scenario.md`) để có thể mô tả quá trình từ hệ thống sập đến truy vết để hoàn thành Demo A3.
+  - Quản lý kịch bản Demo Live (soạn file `docs/demo-scenario.md`) để có thể mô tả quá trình từ hệ thống sập đến truy vết để hoàn thành Live Demo A3.
+- [EVIDENCE_LINK]: Kịch bản Live Demo (`docs/demo-scenario.md`) và phần Incident Response (Section 4).
 - [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/92c2c1b3f48e20bbecec3d1e116c9c1855a94442
-
 ---
 
 ## 6. Bonus Items (Optional)
