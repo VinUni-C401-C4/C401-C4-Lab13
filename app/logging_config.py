@@ -24,13 +24,15 @@ class JsonlFileProcessor:
 
 
 def scrub_event(_: Any, __: str, event_dict: dict[str, Any]) -> dict[str, Any]:
-    payload = event_dict.get("payload")
-    if isinstance(payload, dict):
-        event_dict["payload"] = {
-            k: scrub_text(v) if isinstance(v, str) else v for k, v in payload.items()
-        }
-    if "event" in event_dict and isinstance(event_dict["event"], str):
-        event_dict["event"] = scrub_text(event_dict["event"])
+    # Quét tàn sát toàn bộ các key trong log để ngăn chặn PII bypass (qua session_id, feature...)
+    for k, v in list(event_dict.items()):
+        if isinstance(v, str):
+            event_dict[k] = scrub_text(v)
+        elif k == "payload" and isinstance(v, dict):
+            event_dict["payload"] = {
+                pk: scrub_text(pv) if isinstance(pv, str) else pv 
+                for pk, pv in v.items()
+            }
     return event_dict
 
 

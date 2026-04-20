@@ -46,10 +46,11 @@ async def metrics() -> dict:
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
     # Gắn thông tin ngữ cảnh người dùng vào mọi dòng log trong request này
     # Dùng hash_user_id để ẩn danh tính thật — không bao giờ log user_id gốc
+    # Đã kẹp giới hạn độ dài ở session_id và feature để chống Log Flooding OOM
     bind_contextvars(
         user_id_hash=hash_user_id(body.user_id),
-        session_id=body.session_id,
-        feature=body.feature,
+        session_id=str(body.session_id)[:50],
+        feature=str(body.feature)[:30],
         model=agent.model,
         env=os.getenv("APP_ENV", "dev"),
     )
