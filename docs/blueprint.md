@@ -7,8 +7,8 @@
 - [REPO_URL]: https://github.com/VinUni-C401-C4/C401-C4-Lab13
 - [MEMBERS]:
   - Member A: Phạm Hữu Hoàng Hiệp | Role: Logging & PII
-  - Member B: Dũng | Role: Tracing & Enrichment
-  - Member C: Cường | Role: SLO & Alerts & Dashboard
+  - Member B: Đặng Tiến Dũng | Role: Tracing & Enrichment
+  - Member C: Phạm Việt Cường | Role: SLO & Alerts & Dashboard
   - Member D: Lâm | Role: Load Test & Incident & Report
 
 ---
@@ -65,12 +65,12 @@ EVIDENCE_CORRELATION_ID_SCREENSHOT
 
 ### Phạm Hữu Hoàng Hiệp - 2A202600415
 - [TASKS_COMPLETED]: Xây dựng toàn bộ nền tảng Observability Logging. Khởi tạo và thiết lập `Correlation_id` tại middleware. Làm giàu Log context (`bind_contextvars`) với ẩn danh user_id_hash. Thiết lập Regex chặn PII siêu khắt khe (chặn email, cccd, visa, phone, ipv4, passport) qua processor `scrub_event`. Nâng cấp chống OOM Flooding (giới hạn độ dài session_id/feature). Hỗ trợ team chạy script đạt mốc 100/100 Điểm kỹ thuật.
-- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/b5e40bdee60bcfdb18643f1e39d9eb466f920134
-- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/986c55c045ddf476567e185785c0aca64fa36793
+- [EVIDENCE_LINK](https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/b5e40bdee60bcfdb18643f1e39d9eb466f920134)
+- [EVIDENCE_LINK](https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/986c55c045ddf476567e185785c0aca64fa36793)
 
-### [MEMBER_B_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Đặng Tiến Dũng - 2A202600024 (Tracing & Metrics Export)
+- [TASKS_COMPLETED]: Xây dựng tính năng Tracing & Enrichment. Triển khai hệ thống tracing qua Langfuse SDK với `app/tracing.py` (hỗ trợ `tracing_enabled()`, `flush_traces()`, `trace_chat()`). Tạo script kiểm tra `scripts/test_tracing.py` với danh sách 10 câu hỏi mẫu (EXAMPLE_CHATS) để chạy loop test tự động. Tích hợp tracing vào `/chat` endpoint tại `app/main.py` để ghi nhận latency, tokens, cost, quality score. Thiết lập audit_log ghi ra file `data/audit.jsonl` để theo dõi chi phí và chất lượng.
+- [EVIDENCE_LINK](https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/2b675a275f794ca90f3d77e0b8f2b62bc1705ddc)
 
 ### Phạm Việt Cường - 2A202600420 (SLO & Alerts & Dashboard)
 - [TASKS_COMPLETED]:
@@ -88,9 +88,9 @@ EVIDENCE_CORRELATION_ID_SCREENSHOT
   - Chạy mô phỏng tải bài tập tải (`load_test.py`) để giả lập lưu lượng với `--concurrency 5` và hiển thị Metric màu tại Terminal.
   - Thiết lập và tối ưu kịch bản Incident (cụ thể `rag_slow` và `tool_fail`) để đánh thử nghiệm và theo dõi trạng thái.
   - Thực hiện Trace Root Cause dựa vào việc tìm kiếm `correlation_id` trên log `logs.jsonl` thu thập được để từ đó phân tích lỗi `tool_fail` hay `Vector store timeout`.
-  - Quản lý kịch bản Demo Live (soạn file `docs/demo-scenario.md`) để có thể mô tả quá trình từ hệ thống sập đến truy vết để hoàn thành Live Demo A3.
-- [EVIDENCE_LINK]: Kịch bản Live Demo (`docs/demo-scenario.md`) và phần Incident Response (Section 4).
-- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/92c2c1b3f48e20bbecec3d1e116c9c1855a94442
+  - Quản lý kịch bản Demo Live (soạn file `docs/demo-scenario.md`) để có thể mô tả quá trình từ hệ thống sập đến truy vết để hoàn thành Demo A3.
+- [EVIDENCE_LINK](https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/92c2c1b3f48e20bbecec3d1e116c9c1855a94442)
+
 ---
 
 ## 6. Bonus Items (Optional)
