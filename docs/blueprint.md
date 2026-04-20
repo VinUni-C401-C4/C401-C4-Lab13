@@ -7,8 +7,8 @@
 - [REPO_URL]: https://github.com/VinUni-C401-C4/C401-C4-Lab13
 - [MEMBERS]:
   - Member A: Phạm Hữu Hoàng Hiệp | Role: Logging & PII
-  - Member B: Dũng | Role: Tracing & Enrichment
-  - Member C: Cường | Role: SLO & Alerts & Dashboard
+  - Member B: Đặng Tiến Dũng | Role: Tracing & Enrichment
+  - Member C: Phạm Việt Cường | Role: SLO & Alerts & Dashboard
   - Member D: Lâm | Role: Load Test & Incident & Report
 
 ---
@@ -61,9 +61,9 @@
 - [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/b5e40bdee60bcfdb18643f1e39d9eb466f920134
 - [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/986c55c045ddf476567e185785c0aca64fa36793
 
-### [MEMBER_B_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Đặng Tiến Dũng - 2A202600024 (Tracing & Metrics Export)
+- [TASKS_COMPLETED]: Xây dựng tính năng Tracing & Enrichment. Triển khai hệ thống tracing qua Langfuse SDK với `app/tracing.py` (hỗ trợ `tracing_enabled()`, `flush_traces()`, `trace_chat()`). Tạo script kiểm tra `scripts/test_tracing.py` với danh sách 10 câu hỏi mẫu (EXAMPLE_CHATS) để chạy loop test tự động. Tích hợp tracing vào `/chat` endpoint tại `app/main.py` để ghi nhận latency, tokens, cost, quality score. Thiết lập audit_log ghi ra file `data/audit.jsonl` để theo dõi chi phí và chất lượng.
+- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/2b675a275f794ca90f3d77e0b8f2b62bc1705ddc
 
 ### Phạm Việt Cường - 2A202600420 (SLO & Alerts & Dashboard)
 - [TASKS_COMPLETED]:

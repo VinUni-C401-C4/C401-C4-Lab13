@@ -15,6 +15,70 @@ from app.tracing import tracing_enabled, flush_traces
 from app.audit import audit_log
 
 
+EXAMPLE_CHATS = [
+    {
+        "user_id": "user_1",
+        "feature": "test",
+        "session_id": "session_1",
+        "message": "Hello, how are you?",
+    },
+    {
+        "user_id": "user_2",
+        "feature": "test",
+        "session_id": "session_2",
+        "message": "What is Python?",
+    },
+    {
+        "user_id": "user_3",
+        "feature": "test",
+        "session_id": "session_3",
+        "message": "Explain recursion in 3 sentences.",
+    },
+    {
+        "user_id": "user_4",
+        "feature": "test",
+        "session_id": "session_4",
+        "message": "Write a hello world function in JavaScript.",
+    },
+    {
+        "user_id": "user_5",
+        "feature": "test",
+        "session_id": "session_5",
+        "message": "What are decorators in Python?",
+    },
+    {
+        "user_id": "user_6",
+        "feature": "test",
+        "session_id": "session_6",
+        "message": "How does async/await work?",
+    },
+    {
+        "user_id": "user_7",
+        "feature": "test",
+        "session_id": "session_7",
+        "message": "Explain REST APIs simply.",
+    },
+    {
+        "user_id": "user_8",
+        "feature": "test",
+        "session_id": "session_8",
+        "message": "What is Git and how do I use it?",
+    },
+    {
+        "user_id": "user_9",
+        "feature": "test",
+        "session_id": "session_9",
+        "message": "Tell me about SQL joins.",
+    },
+    {
+        "user_id": "user_10",
+        "feature": "test",
+        "session_id": "session_10",
+        "message": "What is the difference between list and tuple?",
+    },
+]
+
+
 def main():
     base_url = os.getenv("TEST_BASE_URL", "http://127.0.0.1:8000")
 
@@ -22,16 +86,11 @@ def main():
     print(f"Tracing enabled: {tracing_enabled()}")
 
     with httpx.Client(timeout=30.0) as client:
-        for i in range(10):
+        for i, chat in enumerate(EXAMPLE_CHATS):
             try:
                 response = client.post(
                     f"{base_url}/chat",
-                    json={
-                        "user_id": f"user_{i}",
-                        "feature": "test",
-                        "session_id": f"session_{i}",
-                        "message": f"Test message {i}",
-                    },
+                    json=chat,
                 )
                 result = response.json()
                 print(
@@ -40,8 +99,8 @@ def main():
 
                 audit_log(
                     action="test_chat_response",
-                    session_id=f"session_{i}",
-                    feature="test",
+                    session_id=chat["session_id"],
+                    feature=chat["feature"],
                     latency_ms=result.get("latency_ms"),
                     tokens_in=result.get("tokens_in"),
                     tokens_out=result.get("tokens_out"),
@@ -52,7 +111,7 @@ def main():
                 print(f"Request {i + 1} failed: {e}")
 
     flush_traces()
-    print("\nAll 10 traces sent to Langfuse (flushed)!")
+    print(f"\nAll {len(EXAMPLE_CHATS)} traces sent to Langfuse (flushed)!")
     print("Audit logs written to data/audit.jsonl")
 
 
