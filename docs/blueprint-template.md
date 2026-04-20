@@ -3,7 +3,7 @@
 > **Instruction**: Fill in all sections below. This report is designed to be parsed by an automated grading assistant. Ensure all tags (e.g., `[GROUP_NAME]`) are preserved.
 
 ## 1. Team Metadata
-- [GROUP_NAME]: 
+- [GROUP_NAME]: Chatbot hỗ trợ Onboarding sinh viên VinUni
 - [REPO_URL]: 
 - [MEMBERS]:
   - Member A: [Name] | Role: Logging & PII
@@ -55,9 +55,10 @@
 
 ## 5. Individual Contributions & Evidence
 
-### Hiệp
+### Phạm Hữu Hoàng Hiệp - 2A202600415
 - [TASKS_COMPLETED]: Xây dựng toàn bộ nền tảng Observability Logging. Khởi tạo và thiết lập `Correlation_id` tại middleware. Làm giàu Log context (`bind_contextvars`) với ẩn danh user_id_hash. Thiết lập Regex chặn PII siêu khắt khe (chặn email, cccd, visa, phone, ipv4, passport) qua processor `scrub_event`. Nâng cấp chống OOM Flooding (giới hạn độ dài session_id/feature). Hỗ trợ team chạy script đạt mốc 100/100 Điểm kỹ thuật.
-- [EVIDENCE_LINK]: Commit `986c55c` (feat: Implement complete structured logging with deep PII defense)
+- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/b5e40bdee60bcfdb18643f1e39d9eb466f920134
+- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/986c55c045ddf476567e185785c0aca64fa36793
 
 ### [MEMBER_B_NAME]
 - [TASKS_COMPLETED]: 
