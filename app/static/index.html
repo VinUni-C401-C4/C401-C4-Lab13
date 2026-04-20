@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Observability Lab | AI Agent</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #0f172a;
+            --surface: rgba(30, 41, 59, 0.7);
+            --border: rgba(148, 163, 184, 0.1);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-success: #10b981;
+            --accent-error: #ef4444;
+            --accent-warning: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #818cf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            padding: 0.375rem 0.75rem;
+            background: var(--surface);
+            border-radius: 9999px;
+            border: 1px solid var(--border);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-success);
+            box-shadow: 0 0 12px var(--accent-success);
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 1.5rem;
+            gap: 1.5rem;
+            overflow: hidden;
+        }
+
+        #chat-container {
+            flex: 1;
+            background: var(--surface);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease-out;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .message-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .input-area {
+            padding: 1.25rem 1.5rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+        }
+
+        input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover { background: var(--primary-hover); }
+        button:active { transform: scale(0.98); }
+
+        .obsv-panel {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-value { font-family: 'Outfit', sans-serif; font-size: 1.125rem; font-weight: 600; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .incident-banner {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--accent-error);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .loading-dots span {
+            animation: blink 1.4s infinite both;
+            font-weight: bold;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            20% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M12 12L2.7 7.3"></path><path d="M12 12V22"></path><path d="M12 12L21.3 7.3"></path><path d="M14.7 9.3L22 2"></path></svg>
+            <span>OBSV LAB</span>
+        </div>
+        <div class="status-badge" id="app-status">
+            <div class="status-dot"></div>
+            <span>System Operational</span>
+        </div>
+    </header>
+
+    <main>
+        <div id="incident-alert" class="incident-banner">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>Incident Detected: <strong id="incident-name">None</strong></span>
+        </div>
+
+        <div class="obsv-panel">
+            <div class="stat-card">
+                <span class="stat-label">Latency</span>
+                <span class="stat-value" id="stat-latency">-- ms</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Cost</span>
+                <span class="stat-value" id="stat-cost">$0.00</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Trace ID</span>
+                <span class="stat-value" id="stat-trace" style="font-size: 0.875rem;">None</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Tokens</span>
+                <span class="stat-value" id="stat-tokens">0 / 0</span>
+            </div>
+        </div>
+
+        <div id="chat-container">
+            <div id="messages">
+                <div class="message bot-message">
+                    Hello! I'm your instrumented AI agent. Ask me anything about policies, monitoring, or just chat. 
+                    I'll show you my internal metrics in real-time.
+                </div>
+            </div>
+            <form class="input-area" id="chat-form">
+                <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+                <button type="submit" id="send-btn">Send</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const messagesDiv = document.getElementById('messages');
+        const statLatency = document.getElementById('stat-latency');
+        const statCost = document.getElementById('stat-cost');
+        const statTrace = document.getElementById('stat-trace');
+        const statTokens = document.getElementById('stat-tokens');
+        const incidentAlert = document.getElementById('incident-alert');
+        const incidentName = document.getElementById('incident-name');
+
+        let sessionId = 'session-' + Math.random().toString(36).substr(2, 9);
+        let userId = 'user-web-ui';
+
+        async function updateStatus() {
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                const activeIncidents = Object.entries(data.incidents)
+                    .filter(([_, active]) => active)
+                    .map(([name]) => name);
+                
+                if (activeIncidents.length > 0) {
+                    incidentAlert.style.display = 'flex';
+                    incidentName.textContent = activeIncidents.join(', ');
+                } else {
+                    incidentAlert.style.display = 'none';
+                }
+            } catch (e) {}
+        }
+
+        setInterval(updateStatus, 3000);
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Add user message
+            appendMessage('user', message);
+            userInput.value = '';
+            
+            // Add loading placeholder
+            const loadingId = 'loading-' + Date.now();
+            appendMessage('bot', '<span class="loading-dots">Thinking<span>.</span><span>.</span><span>.</span></span>', loadingId);
+
+            try {
+                const start = performance.now();
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        session_id: sessionId,
+                        feature: 'qa',
+                        message: message
+                    })
+                });
+
+                const data = await response.json();
+                
+                // Remove loading
+                document.getElementById(loadingId).remove();
+
+                if (response.ok) {
+                    appendMessage('bot', data.answer, null, {
+                        cid: data.correlation_id,
+                        lat: data.latency_ms,
+                        cost: data.cost_usd
+                    });
+
+                    // Update Stats
+                    statLatency.textContent = data.latency_ms + ' ms';
+                    statCost.textContent = '$' + data.cost_usd;
+                    statTrace.textContent = data.correlation_id;
+                    statTokens.textContent = `${data.tokens_in} / ${data.tokens_out}`;
+                    
+                    // Alert if slow
+                    statLatency.style.color = data.latency_ms > 3000 ? 'var(--accent-warning)' : 'var(--text)';
+                } else {
+                    appendMessage('bot', 'Error: ' + (data.detail || 'System Failure'), null, {
+                        cid: data.correlation_id || 'ERROR',
+                        error: true
+                    });
+                    statTrace.textContent = data.correlation_id || 'ERROR';
+                    statLatency.textContent = 'Failed';
+                    statLatency.style.color = 'var(--accent-error)';
+                }
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                appendMessage('bot', 'Connection failed. Please check if the server is running.');
+            }
+        });
+
+        function appendMessage(role, text, id, meta) {
+            const div = document.createElement('div');
+            div.className = `message ${role}-message`;
+            if (id) div.id = id;
+            
+            div.innerHTML = text;
+
+            if (meta) {
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'message-meta';
+                if (meta.error) {
+                    metaDiv.style.color = 'var(--accent-error)';
+                    metaDiv.innerHTML = `<span>ID: ${meta.cid}</span> <span>•</span> <span>FAIL</span>`;
+                } else {
+                    metaDiv.innerHTML = `<span>ID: ${meta.cid}</span> <span>•</span> <span>${meta.lat}ms</span> <span>•</span> <span>$${meta.cost}</span>`;
+                }
+                div.appendChild(metaDiv);
+            }
+
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>
