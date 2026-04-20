@@ -4,13 +4,12 @@
 
 ## 1. Team Metadata
 - [GROUP_NAME]: Chatbot hỗ trợ Onboarding sinh viên VinUni
-- [REPO_URL]: 
+- [REPO_URL]: https://github.com/VinUni-C401-C4/C401-C4-Lab13
 - [MEMBERS]:
-  - Member A: [Name] | Role: Logging & PII
-  - Member B: [Name] | Role: Tracing & Enrichment
-  - Member C: [Name] | Role: SLO & Alerts
-  - Member D: [Name] | Role: Load Test & Dashboard
-  - Member E: [Name] | Role: Demo & Report
+  - Member A: Phạm Hữu Hoàng Hiệp | Role: Logging & PII
+  - Member B: Dũng | Role: Tracing & Enrichment
+  - Member C: Cường | Role: SLO & Alerts & Dashboard
+  - Member D: Lâm | Role: Load Test & Incident & Report
 
 ---
 
