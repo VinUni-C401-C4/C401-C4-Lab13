@@ -55,9 +55,9 @@
 
 ## 5. Individual Contributions & Evidence
 
-### [MEMBER_A_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: (Link to specific commit or PR)
+### Hiệp
+- [TASKS_COMPLETED]: Xây dựng toàn bộ nền tảng Observability Logging. Khởi tạo và thiết lập `Correlation_id` tại middleware. Làm giàu Log context (`bind_contextvars`) với ẩn danh user_id_hash. Thiết lập Regex chặn PII siêu khắt khe (chặn email, cccd, visa, phone, ipv4, passport) qua processor `scrub_event`. Nâng cấp chống OOM Flooding (giới hạn độ dài session_id/feature). Hỗ trợ team chạy script đạt mốc 100/100 Điểm kỹ thuật.
+- [EVIDENCE_LINK]: Commit `986c55c` (feat: Implement complete structured logging with deep PII defense)
 
 ### [MEMBER_B_NAME]
 - [TASKS_COMPLETED]: 
