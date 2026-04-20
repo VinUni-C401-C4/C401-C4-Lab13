@@ -38,3 +38,16 @@
   - shorten prompts
   - route easy requests to cheaper model
   - apply prompt cache
+
+## 4. Quality score drop
+- Severity: P2
+- Trigger: `quality_score_avg < 0.80 for 15m`
+- Impact: responses still return, but answer quality degrades and user trust drops
+- First checks:
+  1. Compare low-score traces by feature and prompt template
+  2. Check retrieval hit quality and context length
+  3. Confirm if `schema_break` or other incident toggles were enabled
+- Mitigation:
+  - tighten output schema validation
+  - increase retrieval relevance threshold
+  - route complex requests to a higher-quality model

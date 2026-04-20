@@ -1,16 +1,46 @@
 service: day13-observability-lab
 window: 28d
+timezone: Asia/Ho_Chi_Minh
+description: Baseline SLO targets for Day 13 monitoring lab
 slis:
   latency_p95_ms:
     objective: 3000
-    target: 99.5
-    note: Replace with your group's target
-  error_rate_pct:
-    objective: 2
     target: 99.0
+    unit: ms
+    comparator: "<="
+    source_metric: latency_p95_ms
+    note: P95 should stay under 3 seconds for at least 99 percent of checks.
+  latency_p99_ms:
+    objective: 5000
+    target: 98.0
+    unit: ms
+    comparator: "<="
+    source_metric: latency_p99_ms
+    note: Tail latency guardrail for worst-case user experience.
+  error_rate_pct:
+    objective: 2.0
+    target: 99.0
+    unit: "%"
+    comparator: "<="
+    source_metric: error_rate_pct
+    note: Failed requests should remain under 2 percent.
   daily_cost_usd:
     objective: 2.5
     target: 100.0
+    unit: usd/day
+    comparator: "<="
+    source_metric: daily_cost_usd
+    note: Daily cost budget cap for predictable spend.
   quality_score_avg:
-    objective: 0.75
+    objective: 0.80
     target: 95.0
+    unit: score_0_1
+    comparator: ">="
+    source_metric: quality_score_avg
+    note: Average quality score should stay at or above 0.80.
+
+reporting:
+  default_dashboard_range: 1h
+  refresh_interval_sec: 30
+  panel_count_required: 6
+  require_threshold_line: true
