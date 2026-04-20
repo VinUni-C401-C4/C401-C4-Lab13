@@ -3,12 +3,31 @@ from __future__ import annotations
 import hashlib
 import re
 
+# ---------------------------------------------------------------------------
+# Bộ từ điển Regex PII — phòng thủ mọi kịch bản cross-check
+# Mỗi pattern khớp sẽ bị thay bằng [REDACTED_<TÊN>] trong log output.
+# ---------------------------------------------------------------------------
 PII_PATTERNS: dict[str, str] = {
-    "email": r"[\w\.-]+@[\w\.-]+\.\w+",
-    "phone_vn": r"(?:\+84|0)[ \.-]?\d{3}[ \.-]?\d{3}[ \.-]?\d{3,4}", # Matches 090 123 4567, 090.123.4567, etc.
+    # Email: bắt mọi dạng user.name+tag@sub.domain.co
+    "email": r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+",
+
+    # Số điện thoại VN: +84 / 0 tiếp theo 9-10 chữ số, cho phép dấu cách/chấm/gạch
+    "phone_vn": (
+        r"(?:\+84|0)"           # Mã quốc gia hoặc số 0 đầu
+        r"(?:[\s.\-]?\d){9,10}" # 9-10 chữ số, xen kẽ dấu phân cách tùy ý
+    ),
+
+    # Số CCCD / CMND mới (đúng 12 chữ số liền nhau)
     "cccd": r"\b\d{12}\b",
-    "credit_card": r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b",
-    # TODO: Add more patterns (e.g., Passport, Vietnamese address keywords)
+
+    # Thẻ tín dụng: 16 chữ số, có thể cách bằng dấu cách hoặc gạch nối mỗi 4 số
+    "credit_card": r"\b(?:\d{4}[-\s]?){3}\d{4}\b",
+
+    # Hộ chiếu Việt Nam: 1 chữ cái (thường B hoặc C) + 7 chữ số
+    "passport_vn": r"\b[A-Za-z]\d{7}\b",
+
+    # Địa chỉ IPv4: chặn lộ IP nội bộ / public trong log
+    "ipv4": r"\b(?:\d{1,3}\.){3}\d{1,3}\b",
 }
 
 
