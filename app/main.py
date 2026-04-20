@@ -7,13 +7,17 @@ from fastapi.responses import JSONResponse
 from structlog.contextvars import bind_contextvars
 
 from .agent import LabAgent
+from .audit import audit_log
 from .incidents import disable, enable, status
 from .logging_config import configure_logging, get_logger
 from .metrics import record_error, snapshot
 from .middleware import CorrelationIdMiddleware
 from .pii import hash_user_id, summarize_text
 from .schemas import ChatRequest, ChatResponse
-from .tracing import tracing_enabled
+from .tracing import tracing_enabled, observe, langfuse_context, flush_traces
+from dotenv import load_dotenv
+
+load_dotenv()
 
 configure_logging()
 log = get_logger()
@@ -43,38 +47,92 @@ async def metrics() -> dict:
 
 
 @app.post("/chat", response_model=ChatResponse)
+@observe(name="main.chat")  # Langfuse decorator khởi tạo trace
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
-    # Gắn thông tin ngữ cảnh người dùng vào mọi dòng log trong request này
-    # Dùng hash_user_id để ẩn danh tính thật — không bao giờ log user_id gốc
-    # Đã kẹp giới hạn độ dài ở session_id và feature để chống Log Flooding OOM
+    # 1. Khởi tạo Trace Context cho Langfuse
+    # Việc đẩy session_id ở đây giúp Langfuse nhóm các request lại thành một cuộc hội thoại
+    langfuse_context.update_current_trace(
+        user_id=body.user_id,
+        session_id=str(body.session_id),  # QUAN TRỌNG: Gắn trace vào session
+        tags=[body.feature, os.getenv("APP_ENV", "dev")],
+        metadata={
+            "correlation_id": request.state.correlation_id,
+            "feature": body.feature,
+            "client_type": "web-buddy",
+        },
+    )
+
+    # 2. Đồng bộ hóa với Logs hệ thống
     bind_contextvars(
         user_id_hash=hash_user_id(body.user_id),
-        session_id=str(body.session_id)[:50],
+        session_id=str(body.session_id)[:50],  # Giới hạn độ dài để tránh log flooding
         feature=str(body.feature)[:30],
         model=agent.model,
         env=os.getenv("APP_ENV", "dev"),
     )
+
     log.info(
         "request_received",
         service="api",
         payload={"message_preview": summarize_text(body.message)},
     )
+
+    audit_log(
+        action="chat_request",
+        user_id_hash=hash_user_id(body.user_id),
+        session_id=str(body.session_id),
+        feature=str(body.feature),
+        message_preview=summarize_text(body.message),
+    )
+
     try:
+        # Khi gọi agent.run(), Langfuse SDK sẽ tự động truyền trace context xuống
         result = agent.run(
             user_id=body.user_id,
             feature=body.feature,
             session_id=body.session_id,
             message=body.message,
         )
+
+        # 3. Ghi nhận Score vào Session/Trace để đánh giá chất lượng
+        # Điều này giúp bạn lọc những session nào có chất lượng tệ trên dashboard
+        langfuse_context.score(
+            name="quality_score",
+            value=result.quality_score,
+            comment="Heuristic quality from agent",
+        )
+
+        # 4. Cập nhật Usage cho Observation hiện tại
+        langfuse_context.update_current_observation(
+            usage={
+                "input": result.tokens_in,
+                "output": result.tokens_out,
+                "total": result.tokens_in + result.tokens_out,
+                "unit": "TOKENS",
+            }
+        )
+
         log.info(
             "response_sent",
             service="api",
             latency_ms=result.latency_ms,
+            cost_usd=result.cost_usd,
+        )
+
+        audit_log(
+            action="chat_response",
+            user_id_hash=hash_user_id(body.user_id),
+            session_id=str(body.session_id),
+            feature=str(body.feature),
+            latency_ms=result.latency_ms,
             tokens_in=result.tokens_in,
             tokens_out=result.tokens_out,
             cost_usd=result.cost_usd,
-            payload={"answer_preview": summarize_text(result.answer)},
+            quality_score=result.quality_score,
         )
+
+        flush_traces()
+
         return ChatResponse(
             answer=result.answer,
             correlation_id=request.state.correlation_id,
@@ -84,33 +142,51 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
             cost_usd=result.cost_usd,
             quality_score=result.quality_score,
         )
-    except Exception as exc:  # pragma: no cover
+
+    except Exception as exc:
+        # 5. Ghi nhận lỗi vào trace để debug trên Langfuse
+        langfuse_context.update_current_observation(
+            level="ERROR", status_message=str(exc)
+        )
+        flush_traces()
+
         error_type = type(exc).__name__
         record_error(error_type)
-        log.error(
-            "request_failed",
-            service="api",
+        audit_log(
+            action="chat_error",
+            user_id_hash=hash_user_id(body.user_id),
+            session_id=str(body.session_id),
+            feature=str(body.feature),
             error_type=error_type,
-            payload={"detail": str(exc), "message_preview": summarize_text(body.message)},
+            error_detail=str(exc),
+        )
+        log.error(
+            "request_failed", service="api", error_type=error_type, detail=str(exc)
         )
         raise HTTPException(status_code=500, detail=error_type) from exc
 
 
 @app.post("/incidents/{name}/enable")
+@observe(name="main.enable_incident")
 async def enable_incident(name: str) -> JSONResponse:
     try:
         enable(name)
+        audit_log(action="incident_enable", feature=name)
         log.warning("incident_enabled", service="control", payload={"name": name})
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
+        audit_log(action="incident_enable_error", feature=name, error_detail=str(exc))
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
 @app.post("/incidents/{name}/disable")
+@observe(name="main.disable_incident")
 async def disable_incident(name: str) -> JSONResponse:
     try:
         disable(name)
+        audit_log(action="incident_disable", feature=name)
         log.warning("incident_disabled", service="control", payload={"name": name})
         return JSONResponse({"ok": True, "incidents": status()})
     except KeyError as exc:
+        audit_log(action="incident_disable_error", feature=name, error_detail=str(exc))
         raise HTTPException(status_code=404, detail=str(exc)) from exc
