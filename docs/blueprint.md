@@ -81,7 +81,7 @@
   - Thiết lập kịch bản Incident (cụ thể `rag_slow` và `tool_fail`) để đánh thử nghiệm và theo dõi trạng thái.
   - Thực hiện Trace Root Cause dựa vào việc tìm kiếm `correlation_id` trên log `logs.jsonl` thu thập được để từ đó phân tích lỗi `tool_fail` hay `Vector store timeout`.
   - Quản lý kịch bản Demo Live (soạn file `docs/demo-scenario.md`) để có thể mô tả quá trình từ hệ thống sập đến truy vết để hoàn thành Demo A3.
-- [EVIDENCE_LINK]: Kịch bản Live Demo (`docs/demo-scenario.md`) và phần Incident Response (Section 4).
+- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/92c2c1b3f48e20bbecec3d1e116c9c1855a94442
 
 ---
 
