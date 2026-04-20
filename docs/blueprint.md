@@ -63,9 +63,15 @@
 - [TASKS_COMPLETED]: 
 - [EVIDENCE_LINK]: 
 
-### [MEMBER_C_NAME]
-- [TASKS_COMPLETED]: 
-- [EVIDENCE_LINK]: 
+### Phạm Việt Cường - 2A202600420 (SLO & Alerts & Dashboard)
+- [TASKS_COMPLETED]:
+  - Xây dựng và chuẩn hóa SLO tại `config/slo.yaml`: bổ sung objective/target/unit/comparator/source metric cho các SLI chính (`latency_p95_ms`, `latency_p99_ms`, `error_rate_pct`, `daily_cost_usd`, `quality_score_avg`), đồng bộ ngưỡng phục vụ chấm rubric.
+  - Thiết kế và cấu hình alert rules tại `config/alert_rules.yaml`: hoàn thiện tối thiểu 3 luật cảnh báo, mở rộng thành 4 luật gồm `high_latency_p95`, `high_error_rate`, `cost_budget_spike`, `quality_score_drop`; gắn `severity`, `owner`, `slo_ref`, kênh notify và runbook.
+  - Viết và liên kết runbook xử lý sự cố trong `docs/alerts.md`, bổ sung quy trình cho trường hợp tụt chất lượng (`quality_score_drop`) và hướng điều tra theo flow Metrics -> Traces -> Logs.
+  - Thiết kế blueprint Dashboard giám sát tại `docs/dashboard-spec.md` với đúng 6 panels, có đơn vị hiển thị và threshold/SLO line; cấu hình mặc định `Last 1 hour`, auto-refresh `30s`, và SLO summary cho 4 chỉ số cốt lõi.
+  - Hỗ trợ kiểm thử khi bơm tải bằng `scripts/load_test.py`, đối chiếu ngưỡng cảnh báo với kết quả runtime để đảm bảo dashboard/alerts bám sát hành vi hệ thống.
+- [EVIDENCE_LINK]: https://github.com/VinUni-C401-C4/C401-C4-Lab13/commit/8705a93
+- [EVIDENCE_LINK]: `config/slo.yaml`, `config/alert_rules.yaml`, `docs/alerts.md`, `docs/dashboard-spec.md`
 
 ### Lâm (QA & Team Lead)
 - [TASKS_COMPLETED]: 
