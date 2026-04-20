@@ -47,12 +47,11 @@ async def metrics() -> dict:
 
 
 @app.post("/chat", response_model=ChatResponse)
-@observe(name="main.chat")  # Langfuse decorator khởi tạo trace
 async def chat(request: Request, body: ChatRequest) -> ChatResponse:
     # 1. Khởi tạo Trace Context cho Langfuse
     # Việc đẩy session_id ở đây giúp Langfuse nhóm các request lại thành một cuộc hội thoại
     langfuse_context.update_current_trace(
-        user_id=body.user_id,
+        user_id=hash_user_id(body.user_id), # Sửa lỗi PII LEAK: Không chuyển thẳng ID thật cho Langfuse
         session_id=str(body.session_id),  # QUAN TRỌNG: Gắn trace vào session
         tags=[body.feature, os.getenv("APP_ENV", "dev")],
         metadata={
@@ -167,7 +166,6 @@ async def chat(request: Request, body: ChatRequest) -> ChatResponse:
 
 
 @app.post("/incidents/{name}/enable")
-@observe(name="main.enable_incident")
 async def enable_incident(name: str) -> JSONResponse:
     try:
         enable(name)
@@ -180,7 +178,6 @@ async def enable_incident(name: str) -> JSONResponse:
 
 
 @app.post("/incidents/{name}/disable")
-@observe(name="main.disable_incident")
 async def disable_incident(name: str) -> JSONResponse:
     try:
         disable(name)
